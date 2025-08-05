@@ -9,9 +9,36 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+} from '@react-native-firebase/auth';
 
 export default function SignUpScreen({ navigation }: any) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+
+  const handleSignUp = async () => {
+    await createUserWithEmailAndPassword(getAuth(), email, password)
+      .then(() => {
+        console.log('User account created & signed in!');
+        navigation.navigate('Login');
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('That email address is already in use!');
+        }
+
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+
+        console.error(error);
+      });
+  };
+
   return (
     <ImageBackground
       source={require('../../assets/ifMoviePoster.png')}
@@ -52,6 +79,8 @@ export default function SignUpScreen({ navigation }: any) {
           <View style={styles.inputWrapper}>
             <Image source={require('../../assets/user.png')} />
             <TextInput
+              value={username}
+              onChangeText={setUsername}
               placeholder="Username"
               placeholderTextColor="#ccc"
               style={styles.input}
@@ -64,6 +93,8 @@ export default function SignUpScreen({ navigation }: any) {
               source={require('../../assets/email.png')}
             />
             <TextInput
+              value={email}
+              onChangeText={setEmail}
               placeholder="Email"
               placeholderTextColor="#ccc"
               style={styles.input}
@@ -74,6 +105,8 @@ export default function SignUpScreen({ navigation }: any) {
             <Image source={require('../../assets/lock.png')} />
 
             <TextInput
+              value={password}
+              onChangeText={setPassword}
               placeholder="Password"
               placeholderTextColor="#ccc"
               secureTextEntry
@@ -82,7 +115,7 @@ export default function SignUpScreen({ navigation }: any) {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleSignUp}>
           <Text style={styles.loginText}>Sign Up</Text>
         </TouchableOpacity>
 
