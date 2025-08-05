@@ -8,9 +8,19 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useCallback } from 'react';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+} from '@react-native-firebase/auth';
 
 export default function LoginScreen({ navigation }: any) {
+  const handleLogin = useCallback(() => {
+    signInWithEmailAndPassword(getAuth(), 'try@gmail.com', 'nirendra')
+      .then(r => console.log(r))
+      .catch(e => console.log(e));
+  }, []);
+
   return (
     <ImageBackground
       source={require('../../assets/loginbackground.jpg')}
@@ -82,7 +92,7 @@ export default function LoginScreen({ navigation }: any) {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
 
