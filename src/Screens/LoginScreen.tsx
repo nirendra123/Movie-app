@@ -17,6 +17,12 @@ export default function LoginScreen() {
       style={styles.background}
       resizeMode="cover"
     >
+      <Image
+        style={{ position: 'absolute', top: 12, left: 10 }}
+        source={require('../../assets/LOGO.png')}
+        resizeMode="cover"
+      />
+
       <View style={styles.loginContainer}>
         <View style={styles.textContainer}>
           <Text
@@ -82,7 +88,7 @@ export default function LoginScreen() {
 
         <Text style={{ color: 'white', fontSize: 10, fontWeight: 400 }}>
           Don't have an account? Please{' '}
-          <TouchableOpacity>
+          <Text>
             <Text
               style={{
                 color: '#FFB703',
@@ -92,7 +98,7 @@ export default function LoginScreen() {
             >
               Sign Up
             </Text>
-          </TouchableOpacity>{' '}
+          </Text>{' '}
           first.
         </Text>
       </View>
@@ -112,6 +118,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 30,
     elevation: 8,
+    position: 'absolute',
+    bottom: 12,
   },
   textContainer: {
     alignItems: 'center',
