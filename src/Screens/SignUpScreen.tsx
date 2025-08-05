@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/self-closing-comp */
+
 import {
   Image,
   ImageBackground,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import React from 'react';
 
-export default function SignUpScreen() {
+export default function SignUpScreen({ navigation }: any) {
   return (
     <ImageBackground
       source={require('../../assets/ifMoviePoster.png')}
@@ -23,9 +23,7 @@ export default function SignUpScreen() {
         source={require('../../assets/LOGO.png')}
       />
 
-      <View
-        style={[styles.signUpContainer, { position: 'absolute', bottom: 13 }]}
-      >
+      <View style={styles.signUpContainer}>
         <View style={styles.textContainer}>
           <Text
             style={{
@@ -97,6 +95,7 @@ export default function SignUpScreen() {
                 fontSize: 10,
                 alignSelf: 'center',
               }}
+              onPress={() => navigation.replace('Login')}
             >
               Login Page
             </Text>
@@ -119,6 +118,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 30,
     elevation: 8,
+    position: 'absolute',
+    bottom: 12,
   },
   textContainer: {
     alignItems: 'center',

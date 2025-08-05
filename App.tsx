@@ -5,25 +5,15 @@
  * @format
  */
 
-import { StyleSheet, View } from 'react-native';
-import SignUpScreen from './src/Screens/SignUpScreen';
-// import LoginScreen from './src/Screens/LoginScreen';
-// import WelcomeScreen from './src/Screens/WelcomeScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import RootStack from './src/Navigation/RootStack';
 
 function App() {
   return (
-    <View style={styles.container}>
-      {/* <LoginScreen /> */}
-      {/* <WelcomeScreen /> */}
-      <SignUpScreen />
-    </View>
+    <NavigationContainer>
+      <RootStack />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;

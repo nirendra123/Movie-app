@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 
-export default function WelcomeScreen() {
+export default function WelcomeScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
       <Image
@@ -22,7 +22,10 @@ export default function WelcomeScreen() {
         <Text style={styles.textStyle}>Want to see."</Text>
       </View>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.replace('Login')}
+      >
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
     </View>
@@ -36,7 +39,7 @@ const styles = StyleSheet.create({
   },
   background: {
     width: 375,
-    height: 189,
+    height: 389,
 
     // justifyContent: 'center',
   },

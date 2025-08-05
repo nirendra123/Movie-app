@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import React from 'react';
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }: any) {
   return (
     <ImageBackground
       source={require('../../assets/loginbackground.jpg')}
@@ -95,6 +95,7 @@ export default function LoginScreen() {
                 fontSize: 10,
                 alignSelf: 'center',
               }}
+              onPress={() => navigation.replace('SignUp')}
             >
               Sign Up
             </Text>
