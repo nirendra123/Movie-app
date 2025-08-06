@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import FastImage from 'react-native-fast-image';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
@@ -53,10 +54,13 @@ export default function MovieList({ title, category }: Props) {
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
           <View style={styles.movieContainer}>
-            <Image
-              source={{ uri: `${IMAGE_BASE_URL}${item.poster_path}` }}
+            <FastImage
+              source={{
+                uri: `${IMAGE_BASE_URL}${item.poster_path}`,
+                priority: FastImage.priority.normal,
+              }}
               style={styles.poster}
-              resizeMode="cover"
+              resizeMode={FastImage.resizeMode.cover}
             />
             <Text style={styles.movieTitle} numberOfLines={1}>
               {item.title}
