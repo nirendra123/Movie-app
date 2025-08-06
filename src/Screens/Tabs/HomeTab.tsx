@@ -1,8 +1,30 @@
 /* eslint-disable react-native/no-inline-styles */
+import { useEffect } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+// import React, { useEffect, useState } from 'react';
+
+const options = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3M2I2NGVmMjFkYTAxODRlMzEwN2JkNGU1MzY2NTQ0OSIsIm5iZiI6MTc1MTAzOTI3NS41MjYsInN1YiI6IjY4NWViZDJiYTgzY2NkODFmNDkxNTJjZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sMiHvjezkASUDT2xysvlVdD21tYRrjB2GoJDOVlRIMc',
+  },
+};
 
 export default function HomeTab() {
+  // const [movies, setMovies] = useState([]);
+
+  useEffect(() => {
+    fetch(
+      'https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1',
+      options,
+    )
+      .then(res => res.json())
+      .then(res => console.log(res))
+      .catch(err => console.error(err));
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={{ marginBottom: 20 }}>
