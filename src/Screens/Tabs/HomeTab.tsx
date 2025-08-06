@@ -1,10 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useEffect } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-// import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import MovieList from '../../Components/MovieList';
 
-const options = {
+const options1 = {
   method: 'GET',
+  url: 'https://api.themoviedb.org/3/movie/now_playing',
+  params: {
+    language: 'en-US',
+    page: 1,
+  },
   headers: {
     accept: 'application/json',
     Authorization:
@@ -12,18 +19,74 @@ const options = {
   },
 };
 
+const options2 = {
+  method: 'GET',
+  url: 'https://api.themoviedb.org/3/movie/upcoming',
+  params: {
+    language: 'en-US',
+    page: 1,
+  },
+  headers: {
+    accept: 'application/json',
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3M2I2NGVmMjFkYTAxODRlMzEwN2JkNGU1MzY2NTQ0OSIsIm5iZiI6MTc1MTAzOTI3NS41MjYsInN1YiI6IjY4NWViZDJiYTgzY2NkODFmNDkxNTJjZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sMiHvjezkASUDT2xysvlVdD21tYRrjB2GoJDOVlRIMc',
+  },
+};
+
+const options3 = {
+  method: 'GET',
+  url: 'https://api.themoviedb.org/3/movie/top_rated',
+  params: {
+    language: 'en-US',
+    page: 1,
+  },
+  headers: {
+    accept: 'application/json',
+    Authorization:
+      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3M2I2NGVmMjFkYTAxODRlMzEwN2JkNGU1MzY2NTQ0OSIsIm5iZiI6MTc1MTAzOTI3NS41MjYsInN1YiI6IjY4NWViZDJiYTgzY2NkODFmNDkxNTJjZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sMiHvjezkASUDT2xysvlVdD21tYRrjB2GoJDOVlRIMc',
+  },
+};
 export default function HomeTab() {
-  // const [movies, setMovies] = useState([]);
+  const [popularMovies, setPopularMovies] = useState([]);
+  const [topMovies, setTopMovies] = useState([]);
+  const [upcomingMovies, setUpcomingMovies] = useState([]);
+
+  // useEffect(() => {
+  //   fetch(
+  //     'https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1',
+  //     options,
+  //   )
+  //     .then(res => res.json())
+  //     .then(res => console.log(res))
+  //     .catch(err => console.error(err));
+  // }, []);
 
   useEffect(() => {
-    fetch(
-      'https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1',
-      options,
-    )
-      .then(res => res.json())
-      .then(res => console.log(res))
-      .catch(err => console.error(err));
-  }, []);
+    axios
+      .request(options1)
+      .then(response => {
+        setPopularMovies(response.data.results);
+      })
+      .catch(error => {
+        console.error('Error fetching TMDB data:', error);
+      });
+    axios
+      .request(options2)
+      .then(response => {
+        setUpcomingMovies(response.data.results);
+      })
+      .catch(error => {
+        console.error('Error fetching TMDB data:', error);
+      });
+    axios
+      .request(options3)
+      .then(response => {
+        setTopMovies(response.data.results);
+      })
+      .catch(error => {
+        console.error('Error fetching TMDB data:', error);
+      });
+  });
 
   return (
     <View style={styles.container}>
@@ -50,39 +113,9 @@ export default function HomeTab() {
       </View>
 
       <ScrollView>
-        <View style={styles.showMoviesContainer}>
-          <View style={styles.moviesCategoryContainer}>
-            <Text style={styles.categoryHeading}>New Releases</Text>
-            <View style={styles.movieList}>
-              <View style={styles.movieContainer}>
-                <Image></Image>
-                <Text>Hello World</Text>
-              </View>
-              <View style={styles.movieContainer}>
-                <Image></Image>
-                <Text>Hello World</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.moviesCategoryContainer}>
-            <Text style={styles.categoryHeading}>Upcoming Movies</Text>
-            <View style={styles.movieList}>
-              <View style={styles.movieContainer}>
-                <Image></Image>
-                <Text>Hello World</Text>
-              </View>
-            </View>
-          </View>
-          <View style={styles.moviesCategoryContainer}>
-            <Text style={styles.categoryHeading}>Ranked Movies</Text>
-            <View style={styles.movieList}>
-              <View style={styles.movieContainer}>
-                <Image></Image>
-                <Text style={styles.movieTitle}>Hello World</Text>
-              </View>
-            </View>
-          </View>
-        </View>
+        <MovieList title="New Releases" movies={popularMovies} />
+        <MovieList title="Upcoming Movies" movies={upcomingMovies} />
+        <MovieList title="Ranked Movies" movies={topMovies} />
       </ScrollView>
     </View>
   );
@@ -103,38 +136,5 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'flex-start',
     marginHorizontal: 10,
-  },
-  showMoviesContainer: {
-    marginHorizontal: 10,
-
-    marginVertical: 5,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    gap: 1,
-  },
-  moviesCategoryContainer: {
-    height: 140,
-    marginBottom: 10,
-  },
-  categoryHeading: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 600,
-    marginBottom: 5,
-  },
-  movieContainer: {
-    width: 100,
-    height: 120,
-    backgroundColor: 'blue',
-    justifyContent: 'space-between',
-  },
-  movieList: {
-    backgroundColor: 'red',
-    height: '100%',
-    flexDirection: 'row',
-    gap: 5,
-  },
-  movieTitle: {
-    color: 'white',
   },
 });
