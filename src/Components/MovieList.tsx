@@ -1,6 +1,12 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
@@ -46,6 +52,7 @@ export default function MovieList({ title, category }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>{title}</Text>
+
       <FlatList
         data={movies}
         horizontal
@@ -53,20 +60,22 @@ export default function MovieList({ title, category }: Props) {
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
-          <View style={styles.movieContainer}>
-            <FastImage
-              source={{
-                uri: `${IMAGE_BASE_URL}${item.poster_path}`,
-                priority: FastImage.priority.normal,
-              }}
-              style={styles.poster}
-              resizeMode={FastImage.resizeMode.cover}
-            />
-            <Text style={styles.movieTitle} numberOfLines={1}>
-              {item.title}
-            </Text>
-            <Text style={styles.date}>{item.release_date}</Text>
-          </View>
+          <TouchableOpacity>
+            <View style={styles.movieContainer}>
+              <FastImage
+                source={{
+                  uri: `${IMAGE_BASE_URL}${item.poster_path}`,
+                  priority: FastImage.priority.normal,
+                }}
+                style={styles.poster}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+              <Text style={styles.movieTitle} numberOfLines={1}>
+                {item.title}
+              </Text>
+              <Text style={styles.date}>{item.release_date}</Text>
+            </View>
+          </TouchableOpacity>
         )}
       />
     </View>
