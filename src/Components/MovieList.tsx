@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {
@@ -8,21 +9,19 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import { HomeStackParamList, Movie } from '../Navigation/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-type Movie = {
-  id: number;
-  title: string;
-  release_date: string;
-  poster_path: string;
-};
 interface Props {
   title: string;
   category: string;
 }
 
 export default function MovieList({ title, category }: Props) {
+  type NavigationProps = NativeStackNavigationProp<HomeStackParamList>;
+  const navigation = useNavigation<NavigationProps>();
   const [movies, setMovies] = useState<Movie[]>([]);
 
   useEffect(() => {
@@ -60,7 +59,9 @@ export default function MovieList({ title, category }: Props) {
         keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('MovieDetails', { item })}
+          >
             <View style={styles.movieContainer}>
               <FastImage
                 source={{
