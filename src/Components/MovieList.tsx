@@ -1,9 +1,47 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-export default function MovieList({ title, movies }: any) {
+type Movie = {
+  id: number;
+  title: string;
+  release_date: string;
+  poster_path: string;
+};
+interface Props {
+  title: string;
+  category: string;
+}
+
+export default function MovieList({ title, category }: Props) {
+  const [movies, setMovies] = useState<Movie[]>([]);
+
+  useEffect(() => {
+    const options1 = {
+      method: 'GET',
+      url: `https://api.themoviedb.org/3/movie/${category}`,
+      params: {
+        language: 'en-US',
+        page: 1,
+      },
+      headers: {
+        accept: 'application/json',
+        Authorization:
+          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3M2I2NGVmMjFkYTAxODRlMzEwN2JkNGU1MzY2NTQ0OSIsIm5iZiI6MTc1MTAzOTI3NS41MjYsInN1YiI6IjY4NWViZDJiYTgzY2NkODFmNDkxNTJjZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.sMiHvjezkASUDT2xysvlVdD21tYRrjB2GoJDOVlRIMc',
+      },
+    };
+    axios
+      .request(options1)
+      .then(response => {
+        setMovies(response.data.results);
+      })
+      .catch(error => {
+        console.error('Error fetching TMDB data:', error);
+      });
+  }, [category]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>{title}</Text>
@@ -23,6 +61,7 @@ export default function MovieList({ title, movies }: any) {
             <Text style={styles.movieTitle} numberOfLines={1}>
               {item.title}
             </Text>
+            <Text style={styles.date}>{item.release_date}</Text>
           </View>
         )}
       />
@@ -45,7 +84,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   movieContainer: {
-    marginRight: 10,
+    marginRight: 2,
     width: 120,
   },
   poster: {
@@ -56,7 +95,11 @@ const styles = StyleSheet.create({
   movieTitle: {
     marginTop: 5,
     fontSize: 14,
-    textAlign: 'center',
     color: 'white',
+  },
+  date: {
+    color: '#E0E0E0',
+    fontSize: 10,
+    fontWeight: 400,
   },
 });
