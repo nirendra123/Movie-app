@@ -6,5 +6,5 @@ export type Movie = {
 };
 export type HomeStackParamList = {
   MainTabs: undefined;
-  MovieDetails: { item: Movie };
+  MovieDetails: { movieId: number };
 };

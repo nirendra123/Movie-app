@@ -60,7 +60,9 @@ export default function MovieList({ title, category }: Props) {
         contentContainerStyle={styles.listContainer}
         renderItem={({ item }) => (
           <TouchableOpacity
-            onPress={() => navigation.navigate('MovieDetails', { item })}
+            onPress={() =>
+              navigation.navigate('MovieDetails', { movieId: item.id })
+            }
           >
             <View style={styles.movieContainer}>
               <FastImage

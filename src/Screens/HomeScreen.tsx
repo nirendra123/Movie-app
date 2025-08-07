@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BottomStack from '../Navigation/BottomStack';
 import MovieDetailsScreen from './MovieDetailsScreen';
+import ReviewScreen from './ReviewScreen';
 
 const Stack = createNativeStackNavigator();
 export default function HomeScreen() {
@@ -10,8 +11,9 @@ export default function HomeScreen() {
       <Stack.Screen
         name="MovieDetails"
         component={MovieDetailsScreen}
-        options={{ headerShown: true, title: 'Movie Details' }}
+        options={{ headerShown: false, title: 'Movie Details' }}
       />
+      <Stack.Screen name="Review" component={ReviewScreen} />
     </Stack.Navigator>
   );
 }
