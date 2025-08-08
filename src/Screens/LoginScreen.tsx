@@ -8,9 +8,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+} from '@react-native-firebase/auth';
 
 export default function LoginScreen({ navigation }: any) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = useCallback(() => {
+    signInWithEmailAndPassword(getAuth(), email, password)
+      .then(r => console.log(r))
+      .catch(e => console.log(e));
+  }, [email, password]);
+
   return (
     <ImageBackground
       source={require('../../assets/loginbackground.jpg')}
@@ -52,6 +65,8 @@ export default function LoginScreen({ navigation }: any) {
           <View style={styles.inputWrapper}>
             <Image source={require('../../assets/user.png')} />
             <TextInput
+              value={email}
+              onChangeText={setEmail}
               placeholder="Username"
               placeholderTextColor="#ccc"
               style={styles.input}
@@ -62,6 +77,8 @@ export default function LoginScreen({ navigation }: any) {
             <Image source={require('../../assets/lock.png')} />
 
             <TextInput
+              value={password}
+              onChangeText={setPassword}
               placeholder="Password"
               placeholderTextColor="#ccc"
               secureTextEntry
@@ -82,7 +99,7 @@ export default function LoginScreen({ navigation }: any) {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
 
