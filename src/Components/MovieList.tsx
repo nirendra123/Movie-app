@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -7,6 +8,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { HomeStackParamList, Movie } from '../Navigation/types';
@@ -17,9 +19,16 @@ const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 interface Props {
   title: string;
   category: string;
+  posterSize?: number;
+  bookMark?: boolean;
 }
 
-export default function MovieList({ title, category }: Props) {
+export default function MovieList({
+  title,
+  category,
+  posterSize = 100,
+  bookMark = false,
+}: Props) {
   type NavigationProps = NativeStackNavigationProp<HomeStackParamList>;
   const navigation = useNavigation<NavigationProps>();
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -51,6 +60,11 @@ export default function MovieList({ title, category }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>{title}</Text>
+      {bookMark && (
+        <Text style={{ fontSize: 10, fontWeight: 500, marginBottom: 5 }}>
+          Add to the WishList
+        </Text>
+      )}
 
       <FlatList
         data={movies}
@@ -64,19 +78,36 @@ export default function MovieList({ title, category }: Props) {
               navigation.navigate('MovieDetails', { movieId: item.id })
             }
           >
-            <View style={styles.movieContainer}>
+            <View style={[styles.movieContainer, { width: posterSize }]}>
               <FastImage
                 source={{
                   uri: `${IMAGE_BASE_URL}${item.poster_path}`,
                   priority: FastImage.priority.normal,
                 }}
-                style={styles.poster}
+                style={[styles.poster, { width: posterSize }]}
                 resizeMode={FastImage.resizeMode.cover}
               />
               <Text style={styles.movieTitle} numberOfLines={1}>
                 {item.title}
               </Text>
-              <Text style={styles.date}>{item.release_date}</Text>
+              <View
+                style={{
+                  width: 200,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                {' '}
+                <Text style={styles.date}>{item.release_date}</Text>
+                {bookMark && (
+                  <Image
+                    style={{ width: 10, height: 10 }}
+                    source={require('../../assets/Bookmark.png')}
+                    resizeMode="contain"
+                  />
+                )}
+              </View>
             </View>
           </TouchableOpacity>
         )}
@@ -88,23 +119,19 @@ export default function MovieList({ title, category }: Props) {
 const styles = StyleSheet.create({
   container: {
     marginVertical: 10,
+    marginHorizontal: 15,
   },
   heading: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginHorizontal: 10,
     marginBottom: 5,
     color: 'white',
   },
   listContainer: {
-    paddingLeft: 10,
+    gap: 10,
   },
-  movieContainer: {
-    marginRight: 2,
-    width: 120,
-  },
+  movieContainer: {},
   poster: {
-    width: 100,
     height: 150,
     borderRadius: 8,
   },
