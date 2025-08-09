@@ -20,6 +20,7 @@ import firestore, {
   where,
 } from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { addMovieToWatchlist } from '../API/toggleWatchlist';
 
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
@@ -253,7 +254,10 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
             <Text style={styles.text}>Watch Trailer</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => addMovieToWatchlist(movieId)}
+          >
             <Image
               style={{ width: 15, height: 11 }}
               source={require('../../assets/wishlist.png')}
