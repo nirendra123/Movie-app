@@ -287,7 +287,13 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
 
         <View style={{ backgroundColor: 'green' }}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Review', { movieId })}
+            onPress={() =>
+              navigation.navigate('Review', {
+                movieId,
+                posterPath: movie.posterPath,
+                title: movie.title,
+              })
+            }
           >
             <Text>Review</Text>
           </TouchableOpacity>
