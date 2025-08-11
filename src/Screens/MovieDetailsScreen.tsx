@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import FastImage from 'react-native-fast-image';
 import api from '../API/axiosInstance';
 import firestore, {
@@ -19,31 +19,40 @@ import { addMovieToWatchlist } from '../API/toggleWatchlist';
 import { Review, setReviews } from '../store/reviewSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
+import {
+  clearMovie,
+  fetchMovieFailure,
+  fetchMovieStart,
+  fetchMovieSuccess,
+} from '../store/movieDetailsSlice';
 
 export const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 const MovieDetailsScreen = ({ navigation, route }: any) => {
   const dispatch = useDispatch<AppDispatch>();
-
   const reviews = useSelector((state: RootState) => state.reviews.list ?? []);
-
   const { movieId } = route.params;
-  const [movie, setMovie] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+
+  const { movie, loading, error } = useSelector(
+    (state: RootState) => state.movieDetails,
+  );
 
   useEffect(() => {
-    setLoading(true);
-    api
-      .get(`/movie/${movieId}`)
-      .then(res => {
-        setMovie(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
+    const fetchMovie = async () => {
+      dispatch(fetchMovieStart());
+      try {
+        const res = await api.get(`/movie/${movieId}`);
+        dispatch(fetchMovieSuccess(res.data));
+      } catch (err: any) {
         console.error('Failed to fetch movie details', err);
-        setLoading(false);
-      });
-  }, [movieId]);
+        dispatch(fetchMovieFailure(err.message));
+      }
+    };
+    fetchMovie();
+    return () => {
+      dispatch(clearMovie());
+    };
+  }, [movieId, dispatch]);
 
   useEffect(() => {
     const user = auth().currentUser;
@@ -83,6 +92,14 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" color="white" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text style={{ color: 'white' }}>Error: {error}</Text>
       </View>
     );
   }

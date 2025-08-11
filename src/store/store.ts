@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import reviewReducer from '../store/reviewSlice';
 import watchlistReducer from '../store/watchlistSlice';
+import moviesDetailsReducer from './movieDetailsSlice';
 const rootReducer = combineReducers({
   reviews: reviewReducer,
   watchlist: watchlistReducer,
+  movieDetails: moviesDetailsReducer,
 });
 
 export const store = configureStore({
