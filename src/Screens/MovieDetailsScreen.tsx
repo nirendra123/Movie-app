@@ -1,7 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import {
   ActivityIndicator,
-  FlatList,
   Image,
   ScrollView,
   StyleSheet,
@@ -14,15 +13,11 @@ import FastImage from 'react-native-fast-image';
 import api from '../API/axiosInstance';
 import firestore, {
   FirebaseFirestoreTypes,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
 } from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { addMovieToWatchlist } from '../API/toggleWatchlist';
 
-const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
+export const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
 type Review = {
   id: string;
@@ -56,29 +51,31 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
     const user = auth().currentUser;
     if (!user || !movieId) return;
 
-    const reviewCollection = firestore().collection('reviews');
-    const q = query(
-      reviewCollection,
-      where('movieId', '==', movieId),
-      orderBy('createdAt', 'desc'),
-    );
-
-    const unsubscribe = onSnapshot(q, snapshot => {
-      const reviewList: Review[] =
-        snapshot?.docs?.map(
-          (doc: FirebaseFirestoreTypes.QueryDocumentSnapshot) => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              text: data.text,
-              movieId: data.movieId,
-              userId: data.userId,
-              createdAt: data.createdAt || null,
-            };
-          },
-        ) || [];
-      setReviews(reviewList);
-    });
+    const unsubscribe = firestore()
+      .collection('reviews')
+      .where('movieId', '==', movieId)
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(
+        snapshot => {
+          const reviewList: Review[] =
+            snapshot?.docs?.map(
+              (doc: FirebaseFirestoreTypes.QueryDocumentSnapshot) => {
+                const data = doc.data();
+                return {
+                  id: doc.id,
+                  text: data.text,
+                  movieId: data.movieId,
+                  userId: data.userId,
+                  createdAt: data.createdAt || null,
+                };
+              },
+            ) || [];
+          setReviews(reviewList);
+        },
+        err => {
+          console.error('Error fetching reviews:', err);
+        },
+      );
     return () => unsubscribe();
   }, [movieId]);
 
@@ -285,12 +282,22 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
           <Text style={styles.overview}>{movie.overview}</Text>
         </View>
 
-        <View style={{ backgroundColor: 'green' }}>
+        <View>
           <TouchableOpacity
+            style={{
+              backgroundColor: '#FFB703',
+              width: 104,
+              height: 36,
+              borderRadius: 20,
+              alignSelf: 'center',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginVertical: 15,
+            }}
             onPress={() =>
               navigation.navigate('Review', {
                 movieId,
-                posterPath: movie.posterPath,
+                posterPath: movie.poster_path,
                 title: movie.title,
               })
             }
@@ -298,17 +305,16 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
             <Text>Review</Text>
           </TouchableOpacity>
 
-          <FlatList
-            data={reviews || []}
-            keyExtractor={item => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.reviewItem}>
-                <Text style={styles.userId}>User: {item.userId}</Text>
-                <Text> {item.text}</Text>
-              </View>
-            )}
-            contentContainerStyle={{ paddingVertical: 10 }}
-          />
+          <View>
+            <View style={{ paddingVertical: 10 }}>
+              {(reviews || []).map(item => (
+                <View key={item.id} style={styles.reviewItem}>
+                  <Text style={styles.userId}>User: {item.userId}</Text>
+                  <Text style={styles.userId}>{item.text}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
         </View>
         {/*
       <View>
@@ -392,6 +398,8 @@ const styles = StyleSheet.create({
   userId: {
     fontWeight: 'bold',
     marginBottom: 2,
+    color: 'white',
+    marginHorizontal: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
