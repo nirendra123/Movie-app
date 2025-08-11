@@ -23,15 +23,17 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { IMAGE_BASE_URL } from './MovieDetailsScreen';
 import FastImage from 'react-native-fast-image';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store/store';
+import { addReview } from '../store/reviewSlice';
 
 const db = getFirestore();
 
 const ReviewScreen = ({ navigation, route }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
   const { movieId, posterPath, title } = route.params;
   const [text, setText] = useState('');
   const [rating, setRating] = useState(0);
-  console.log('posterPath:', posterPath);
-  console.log('Full URL:', `${IMAGE_BASE_URL}${posterPath}`);
 
   const handleSubmit = async () => {
     const user = getAuth().currentUser;
@@ -39,13 +41,23 @@ const ReviewScreen = ({ navigation, route }: any) => {
     if (!user || !text.trim()) return;
 
     try {
-      await addDoc(collection(db, 'reviews'), {
+      const docRef = await addDoc(collection(db, 'reviews'), {
         movieId,
         text,
         rating,
         userId: user.uid,
         createdAt: serverTimestamp(),
       });
+      dispatch(
+        addReview({
+          id: docRef.id,
+          movieId,
+          text,
+          rating,
+          userId: user.uid,
+          createdAt: new Date().toISOString(),
+        }),
+      );
 
       setText('');
       setRating(0);

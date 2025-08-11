@@ -16,22 +16,20 @@ import firestore, {
 } from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { addMovieToWatchlist } from '../API/toggleWatchlist';
+import { Review, setReviews } from '../store/reviewSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/store';
 
 export const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 
-type Review = {
-  id: string;
-  text: string;
-  movieId: string;
-  userId: string;
-  createdAt: FirebaseFirestoreTypes.Timestamp;
-};
-
 const MovieDetailsScreen = ({ navigation, route }: any) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const reviews = useSelector((state: RootState) => state.reviews.list);
+
   const { movieId } = route.params;
   const [movie, setMovie] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -66,18 +64,20 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
                   text: data.text,
                   movieId: data.movieId,
                   userId: data.userId,
-                  createdAt: data.createdAt || null,
+                  createdAt: data.createdAt
+                    ? data.createdAt.toDate().toISOString()
+                    : null,
                 };
               },
             ) || [];
-          setReviews(reviewList);
+          dispatch(setReviews(reviewList));
         },
         err => {
           console.error('Error fetching reviews:', err);
         },
       );
     return () => unsubscribe();
-  }, [movieId]);
+  }, [movieId, dispatch]);
 
   if (loading) {
     return (
@@ -99,6 +99,9 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
       ?.map((company: any) => company.name)
       .join(', ') || '';
 
+  const uniqueReviews = reviews.filter(
+    (review, index, self) => self.findIndex(r => r.id === review.id) === index,
+  );
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -307,7 +310,7 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
 
           <View>
             <View style={{ paddingVertical: 10 }}>
-              {(reviews || []).map(item => (
+              {(uniqueReviews || []).map(item => (
                 <View key={item.id} style={styles.reviewItem}>
                   <Text style={styles.userId}>User: {item.userId}</Text>
                   <Text style={styles.userId}>{item.text}</Text>
