@@ -7,11 +7,15 @@
 
 import { NavigationContainer } from '@react-navigation/native';
 import RootStack from './src/Navigation/RootStack';
+import { Provider } from 'react-redux';
+import { store } from './src/store/store';
 
 function App() {
   return (
     <NavigationContainer>
-      <RootStack />
+      <Provider store={store}>
+        <RootStack />
+      </Provider>
     </NavigationContainer>
   );
 }
