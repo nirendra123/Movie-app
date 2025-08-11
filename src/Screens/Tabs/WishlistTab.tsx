@@ -13,21 +13,24 @@ import {
   getWatchlistMovies,
   // removeMovieFromWatchlist,
 } from '../../API/toggleWatchlist';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../store/store';
+import { setWatchlistRedux, WatchlistMovie } from '../../store/watchlistSlice';
 
 export default function WishlistTab({ navigation }: any) {
-  const [movies, setMovies] = useState<any[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const movies = useSelector((state: RootState) => state.watchlist.list);
   const [loading, setLoading] = useState(true);
 
-  const loadWatchlist = async () => {
-    setLoading(true);
-    const watchlistMovies = await getWatchlistMovies();
-    setMovies(watchlistMovies);
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const loadWatchlist = async () => {
+      setLoading(true);
+      const watchlistMovies: WatchlistMovie[] = await getWatchlistMovies();
+      dispatch(setWatchlistRedux(watchlistMovies));
+      setLoading(false);
+    };
     loadWatchlist();
-  }, []);
+  }, [dispatch]);
 
   // const handleRemove = async (movieId: number) => {
   //   await removeMovieFromWatchlist(movieId);

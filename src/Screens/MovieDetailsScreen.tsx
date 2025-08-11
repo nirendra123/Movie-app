@@ -25,7 +25,7 @@ export const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 const MovieDetailsScreen = ({ navigation, route }: any) => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const reviews = useSelector((state: RootState) => state.reviews.list);
+  const reviews = useSelector((state: RootState) => state.reviews.list ?? []);
 
   const { movieId } = route.params;
   const [movie, setMovie] = useState<any>(null);
