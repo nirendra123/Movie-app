@@ -7,7 +7,7 @@ import {
   getFirestore,
   serverTimestamp,
 } from '@react-native-firebase/firestore';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   Image,
@@ -26,6 +26,7 @@ import FastImage from 'react-native-fast-image';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { addReview } from '../store/reviewSlice';
+import { getFavoriteStatus, toggleFavorite } from '../API/toggleFavourite';
 
 const db = getFirestore();
 
@@ -35,6 +36,21 @@ const ReviewScreen = ({ navigation, route }: any) => {
   const [text, setText] = useState('');
   const [rating, setRating] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    const loadDate = async () => {
+      const user = getAuth().currentUser;
+      if (!user) return;
+
+      try {
+        const favStatus = await getFavoriteStatus(movieId);
+        setIsFavorite(favStatus);
+      } catch (err) {
+        console.error('Failed to load initial favorite data:', err);
+      }
+    };
+    loadDate();
+  }, [movieId]);
 
   const handleSubmit = async () => {
     const user = getAuth().currentUser;
@@ -68,11 +84,13 @@ const ReviewScreen = ({ navigation, route }: any) => {
     }
   };
 
-  const handleToggleFavorite = () => {
-    if (isFavorite) {
-      setIsFavorite(false);
-    } else {
-      setIsFavorite(true);
+  const handleToggleFavorite = async () => {
+    try {
+      const newFavouriteStatus = !isFavorite;
+      await toggleFavorite(movieId, newFavouriteStatus);
+      setIsFavorite(newFavouriteStatus);
+    } catch (err) {
+      console.error('Failed to toggle favorite:', err);
     }
   };
 
