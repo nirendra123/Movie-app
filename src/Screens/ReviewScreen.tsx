@@ -34,6 +34,7 @@ const ReviewScreen = ({ navigation, route }: any) => {
   const { movieId, posterPath, title } = route.params;
   const [text, setText] = useState('');
   const [rating, setRating] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const handleSubmit = async () => {
     const user = getAuth().currentUser;
@@ -64,6 +65,14 @@ const ReviewScreen = ({ navigation, route }: any) => {
       navigation.goBack();
     } catch (error) {
       console.error('Failed to add review:', error);
+    }
+  };
+
+  const handleToggleFavorite = () => {
+    if (isFavorite) {
+      setIsFavorite(false);
+    } else {
+      setIsFavorite(true);
     }
   };
 
@@ -131,16 +140,65 @@ const ReviewScreen = ({ navigation, route }: any) => {
           </View>
         </View>
 
-        <View style={styles.starContainer}>
-          {[1, 2, 3, 4, 5].map(num => (
-            <TouchableOpacity key={num} onPress={() => setRating(num)}>
-              <Icon
-                name={num <= rating ? 'star' : 'star-border'}
-                size={30}
-                color={num <= rating ? '#FFD700' : 'gray'}
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginBottom: 12,
+            marginHorizontal: 30,
+          }}
+        >
+          <View
+            style={{
+              gap: 10,
+            }}
+          >
+            <Text
+              style={{
+                padding: 6,
+                fontSize: 10,
+                fontWeight: '500',
+                color: 'white',
+              }}
+            >
+              Rate
+            </Text>
+
+            <View style={styles.starContainer}>
+              {[1, 2, 3, 4, 5].map(num => (
+                <TouchableOpacity key={num} onPress={() => setRating(num)}>
+                  <Icon
+                    name={num <= rating ? 'star' : 'star-border'}
+                    size={30}
+                    color={num <= rating ? '#FFD700' : 'gray'}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginRight: 20,
+              gap: 10,
+            }}
+          >
+            <Text style={{ fontSize: 10, fontWeight: '500', color: 'white' }}>
+              {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+            </Text>
+            <TouchableOpacity onPress={handleToggleFavorite}>
+              <Image
+                style={{ width: 27, height: 27 }}
+                source={
+                  isFavorite
+                    ? require('../../assets/like.png')
+                    : require('../../assets/favorite.png')
+                }
+                resizeMode="contain"
               />
             </TouchableOpacity>
-          ))}
+          </View>
         </View>
 
         <TextInput
@@ -227,7 +285,5 @@ const styles = StyleSheet.create({
   },
   starContainer: {
     flexDirection: 'row',
-    marginBottom: 12,
-    marginHorizontal: 30,
   },
 });
