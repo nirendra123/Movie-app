@@ -8,14 +8,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import api from '../API/axiosInstance';
 import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { addMovieToWatchlist } from '../API/toggleWatchlist';
+import {
+  addMovieToWatchlist,
+  getWatchlistStatus,
+  removeMovieFromWatchlist,
+} from '../API/toggleWatchlist';
 import { Review, setReviews } from '../store/reviewSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
@@ -32,6 +36,7 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const reviews = useSelector((state: RootState) => state.reviews.list ?? []);
   const { movieId } = route.params;
+  const [isInWatchlist, setIsInWatchlist] = useState(false);
 
   const { movie, loading, error } = useSelector(
     (state: RootState) => state.movieDetails,
@@ -87,6 +92,32 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
       );
     return () => unsubscribe();
   }, [movieId, dispatch]);
+
+  useEffect(() => {
+    const fetchWatchListStatus = async () => {
+      try {
+        const status = await getWatchlistStatus(movieId);
+        setIsInWatchlist(status);
+      } catch (err) {
+        console.error('Failed to fetch watchlist status:', err);
+      }
+    };
+    fetchWatchListStatus();
+  }, [movieId]);
+
+  const handleToggleWatchlist = async () => {
+    try {
+      if (isInWatchlist) {
+        await removeMovieFromWatchlist(movieId);
+        setIsInWatchlist(false);
+      } else {
+        await addMovieToWatchlist(movieId);
+        setIsInWatchlist(true);
+      }
+    } catch (err) {
+      console.error('Failed to toggle watchlist:', err);
+    }
+  };
 
   if (loading) {
     return (
@@ -273,14 +304,20 @@ const MovieDetailsScreen = ({ navigation, route }: any) => {
 
           <TouchableOpacity
             style={styles.button}
-            onPress={() => addMovieToWatchlist(movieId)}
+            onPress={handleToggleWatchlist}
           >
             <Image
               style={{ width: 15, height: 11 }}
-              source={require('../../assets/wishlist.png')}
+              source={
+                isInWatchlist
+                  ? require('../../assets/wishlist.png')
+                  : require('../../assets/Bookmark.png')
+              }
               resizeMode="contain"
             />
-            <Text style={styles.text}>Add to WishList</Text>
+            <Text style={styles.text}>
+              {isInWatchlist ? 'Remove from wishlist' : 'Add to Wishlist'}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: '#FFCA45' }]}
