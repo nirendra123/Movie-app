@@ -60,3 +60,16 @@ export async function getWatchlistMovies() {
     return [];
   }
 }
+
+export async function getWatchlistStatus(movieId: number) {
+  try {
+    if (!sessionId) throw new Error('No session id');
+    const response = await api.get(`/movie/${movieId}/account_states`, {
+      params: { session_id: sessionId },
+    });
+    return response.data.watchlist;
+  } catch (error) {
+    console.error('Error fetching watchlist status:', error);
+    return false;
+  }
+}
